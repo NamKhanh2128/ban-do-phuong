@@ -1,90 +1,99 @@
-import { Home, FileText, Calendar, Bell, User } from "lucide-react";
-import { NavLink } from "@/components/NavLink";
+"use client";
+
+import { Home, FileText, Calendar, User } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 const ResidentTaskbar = () => {
   const navigate = useNavigate();
-  const [notifications] = useState([
-    { id: 1, title: "Thông báo tiêm chủng", time: "2 giờ trước" },
-    { id: 2, title: "Họp tổ dân phố", time: "1 ngày trước" },
-  ]);
+  const location = useLocation();
+
+  const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border shadow-strong z-50">
+    // Giảm padding container chính xuống py-0.5
+    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-50">
       <div className="max-w-screen-xl mx-auto px-2">
-        <div className="flex items-center justify-around py-2">
-          <NavLink
-            to="/resident/home"
-            className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all"
-            activeClassName="text-primary bg-primary/10 font-medium"
+        <div className="flex items-center justify-around py-0.5">
+          
+          {/* 1. TRANG CHỦ */}
+          <button
+            onClick={() => navigate("/resident/home")}
+            className={cn(
+              "flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all w-16 outline-none", // Giảm gap, py và width
+              isActive("/resident/home") 
+                ? "text-primary bg-primary/10 font-bold" 
+                : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+            )}
           >
-            <Home className="w-5 h-5" />
-            <span className="text-xs">Trang chủ</span>
-          </NavLink>
+            {/* Giảm icon xuống w-5 h-5 */}
+            <Home className={cn("w-5 h-5", isActive("/resident/home") && "fill-current")} />
+            <span className="text-[9px] leading-none">Trang chủ</span>
+          </button>
 
-          <NavLink
-            to="/resident/profile"
-            className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all"
-            activeClassName="text-primary bg-primary/10 font-medium"
+          {/* 2. HỘ KHẨU */}
+          <button
+            onClick={() => navigate("/resident/profile")}
+            className={cn(
+              "flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all w-16 outline-none",
+              isActive("/resident/profile")
+                ? "text-primary bg-primary/10 font-bold"
+                : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+            )}
           >
-            <FileText className="w-5 h-5" />
-            <span className="text-xs">Hộ khẩu</span>
-          </NavLink>
+            <FileText className={cn("w-5 h-5", isActive("/resident/profile") && "fill-current")} />
+            <span className="text-[9px] leading-none">Hộ khẩu</span>
+          </button>
 
-          <NavLink
-            to="/resident/booking"
-            className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all"
-            activeClassName="text-primary bg-primary/10 font-medium"
+          {/* 3. ĐẶT LỊCH */}
+          <button
+            onClick={() => navigate("/resident/booking")}
+            className={cn(
+              "flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all w-16 outline-none",
+              isActive("/resident/booking")
+                ? "text-primary bg-primary/10 font-bold"
+                : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+            )}
           >
-            <Calendar className="w-5 h-5" />
-            <span className="text-xs">Đặt lịch</span>
-          </NavLink>
+            <Calendar className={cn("w-5 h-5", isActive("/resident/booking") && "fill-current")} />
+            <span className="text-[9px] leading-none">Đặt lịch</span>
+          </button>
 
+          {/* 4. TÀI KHOẢN */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="flex flex-col items-center gap-1 px-3 h-auto py-2 relative">
-                <Bell className="w-5 h-5" />
-                <span className="text-xs">Thông báo</span>
-                {notifications.length > 0 && (
-                  <span className="absolute top-1 right-2 w-2 h-2 bg-destructive rounded-full"></span>
+              <button 
+                className={cn(
+                  "flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all w-16 outline-none",
+                  location.pathname.includes("/resident/declaration")
+                    ? "text-primary bg-primary/10 font-bold"
+                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
                 )}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64">
-              {notifications.map((notif) => (
-                <DropdownMenuItem key={notif.id} className="flex flex-col items-start">
-                  <span className="font-medium">{notif.title}</span>
-                  <span className="text-xs text-muted-foreground">{notif.time}</span>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="flex flex-col items-center gap-1 px-3 h-auto py-2">
+              >
                 <User className="w-5 h-5" />
-                <span className="text-xs">Tài khoản</span>
-              </Button>
+                <span className="text-[9px] leading-none">Tài khoản</span>
+              </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => navigate("/resident/declaration")}>
+            <DropdownMenuContent align="end" className="mb-2 w-48 border-slate-200 shadow-xl">
+              <DropdownMenuItem onClick={() => navigate("/resident/declaration")} className="cursor-pointer">
                 Khai báo
               </DropdownMenuItem>
-              <DropdownMenuItem>Đổi mật khẩu</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/login")} className="text-destructive">
+              <DropdownMenuItem className="cursor-pointer">
+                Đổi mật khẩu
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/login")} className="text-red-600 focus:text-red-600 cursor-pointer">
                 Đăng xuất
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
         </div>
       </div>
     </nav>
